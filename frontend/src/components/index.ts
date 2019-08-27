@@ -1,1 +1,2 @@
-export * from "./header";
+export * from "./nav_bar";
+export * from "./general";

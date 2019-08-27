@@ -1,0 +1,17 @@
+/*@import "../node_modules/tailwindcss/dist/base.css";*/
+
+/*
+@import "../node_modules/tailwindcss/dist/base.css";
+@import "../node_modules/tailwindcss/dist/components.css";
+@import "../node_modules/tailwindcss/dist/utilities.css";
+*/
+
+@tailwind base;
+
+@tailwind components;
+
+.rotate-90 {
+  transform: rotate(90deg);
+}
+
+@tailwind utilities;

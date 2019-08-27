@@ -1,0 +1,126 @@
+version: 2
+
+workflows:
+  version: 2
+  test_and_release:
+    jobs:
+      - compute_tag:
+          filters:
+            branches:
+              only:
+                - master
+                - production
+
+      - test_and_make_backend
+      - test_and_make_frontend
+
+      - build_container:
+          filters:
+            branches:
+              only:
+                - master
+
+          requires:
+            - compute_tag
+            - test_and_make_frontend
+            - test_and_make_backend
+
+      - deploy_image:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - build_container
+            - compute_tag
+
+jobs:
+  test_and_make_frontend:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - restore_cache:
+          key: yarn-cache-frontend-v1-{{ checksum "frontend/yarn.lock" }}
+      - run: cd frontend && yarn install
+      - save_cache:
+          key: yarn-cache-frontend-v1-{{ checksum "frontend/yarn.lock" }}
+          paths:
+            - frontend/node_modules
+            - $HOME/.yarn
+      - run:
+          command: |
+            set -e
+            cd frontend
+            yarn fmt:check
+            yarn build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - frontend/dist
+
+  test_and_make_backend:
+    docker:
+      - image: circleci/rust:1.37
+    steps:
+      - checkout
+      - restore_cache:
+          key: cargo-cache-backend-v1-{{ checksum "backend/Cargo.lock" }}
+      - run: rustup component add rustfmt
+      - run:
+          command: |
+            set -e
+            cd backend
+            cargo fmt --all -- --check
+            cargo build -p backend --release
+      - save_cache:
+          key: cargo-cache-backend-v1-{{ checksum "backend/Cargo.lock" }}
+          paths:
+            - backend/target
+            - $HOME/.cargo
+      - persist_to_workspace:
+          root: .
+          paths:
+            - backend/target/release/backend
+
+  build_container:
+    machine: true
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Push backend image to registry
+          command: |
+            set -e
+            TAG="$(cat tag.txt)"
+            TAG=$TAG bash build.sh
+            echo $GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin gcr.io/x-cycling-251008
+            docker tag "gcr.io/x-cycling-251008/nsc:${TAG}" "gcr.io/x-cycling-251008/nsc:latest"
+            docker push "gcr.io/x-cycling-251008/nsc:latest"
+            docker push "gcr.io/x-cycling-251008/nsc:${TAG}"
+
+  deploy_image:
+    docker:
+      - image: google/cloud-sdk
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          command: |
+            set -e
+            echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+            gcloud --quiet config set project x-cycling-251008
+            TAG="$(cat tag.txt)" bash deploy.sh
+        
+  compute_tag:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - run: echo "$(git rev-parse --short HEAD)" > tag.txt
+      - persist_to_workspace:
+          root: .
+          paths:
+            - tag.txt
