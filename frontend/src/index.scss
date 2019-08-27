@@ -1,0 +1,32 @@
+
+// Brand colors
+$yellow: #ffcc00;
+$yellow_dark: #cccc00;
+$yellow_dark_dark: #999900;
+$yellow_light: #ffff66;
+$yellow_light_light: #ffff99;
+
+$red: #ff0000;
+$red_light: #ff6666;
+$red_light_light: #ff9999;
+$red_dark: #cc0000;
+$red_dark_dark: #990000;
+
+$aqua: #00ffff;
+$aqua_light: #66ffff;
+$aqua_light_light: #99ffff;
+$aqua_dark: #009966;
+$aqua_dark_dark: #006666;
+
+// Update Bulma's global variables
+$family-sans-serif: "Nunito", sans-serif;
+$primary: $red;
+$link: $aqua_dark_dark;
+$widescreen-enabled: false;
+$fullhd-enabled: false;
+
+@import "../node_modules/bulma";
+
+$fa-font-path: "../node_modules/@fortawesome/fontawesome-free/webfonts";
+@import "../node_modules/@fortawesome/fontawesome-free/scss/fontawesome";
+@import "../node_modules/@fortawesome/fontawesome-free/scss/regular";

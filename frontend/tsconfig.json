@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "dom",
+      "es2019"
+    ],
+    "baseUrl": ".",
+    "moduleResolution": "node",
+    "target": "es6",
+    "module": "commonjs",
+    "isolatedModules": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "declaration": true,
+    "noImplicitAny": true,
+    "noImplicitUseStrict": false,
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "strictNullChecks": true,
+    "resolveJsonModule": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "esModuleInterop": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "jsx": "react",
+    "jsxFactory": "h",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "sourceMap": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/typings"
+    ],
+    "incremental": true
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "src/assets"
+  ]
+}
