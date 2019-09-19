@@ -11,8 +11,7 @@ workflows:
                 - master
                 - production
 
-      - test_and_make_backend
-      - test_and_make_frontend
+      - test_and_make
 
       - build_container:
           filters:
@@ -22,8 +21,7 @@ workflows:
 
           requires:
             - compute_tag
-            - test_and_make_frontend
-            - test_and_make_backend
+            - test_and_make
 
       - deploy_image:
           filters:
@@ -35,53 +33,28 @@ workflows:
             - compute_tag
 
 jobs:
-  test_and_make_frontend:
+  test_and_make:
     docker:
       - image: circleci/node:12
     steps:
       - checkout
       - restore_cache:
-          key: yarn-cache-frontend-v1-{{ checksum "frontend/yarn.lock" }}
-      - run: cd frontend && yarn install
+          key: yarn-cache-v1-{{ checksum "yarn.lock" }}
+      - run: yarn install
       - save_cache:
-          key: yarn-cache-frontend-v1-{{ checksum "frontend/yarn.lock" }}
+          key: yarn-cache-v1-{{ checksum "yarn.lock" }}
           paths:
-            - frontend/node_modules
+            - node_modules
             - $HOME/.yarn
       - run:
           command: |
             set -e
-            cd frontend
             yarn fmt:check
             yarn build
       - persist_to_workspace:
           root: .
           paths:
-            - frontend/dist
-
-  test_and_make_backend:
-    docker:
-      - image: circleci/rust:1.37
-    steps:
-      - checkout
-      - restore_cache:
-          key: cargo-cache-backend-v1-{{ checksum "backend/Cargo.lock" }}
-      - run: rustup component add rustfmt
-      - run:
-          command: |
-            set -e
-            cd backend
-            cargo fmt --all -- --check
-            cargo build -p backend --release
-      - save_cache:
-          key: cargo-cache-backend-v1-{{ checksum "backend/Cargo.lock" }}
-          paths:
-            - backend/target
-            - $HOME/.cargo
-      - persist_to_workspace:
-          root: .
-          paths:
-            - backend/target/release/backend
+            - dist
 
   build_container:
     machine: true
@@ -94,7 +67,7 @@ jobs:
           command: |
             set -e
             TAG="$(cat tag.txt)"
-            TAG=$TAG bash build.sh
+            TAG=$TAG docker build -t gcr.io/x-cycling-251008/nsc:$TAG .
             echo $GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin gcr.io/x-cycling-251008
             docker tag "gcr.io/x-cycling-251008/nsc:${TAG}" "gcr.io/x-cycling-251008/nsc:latest"
             docker push "gcr.io/x-cycling-251008/nsc:latest"
