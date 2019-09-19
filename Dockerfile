@@ -1,13 +1,7 @@
-FROM debian:stretch-slim
-
-RUN apt-get update && apt-get install -qq libpq5
+FROM node:12-alpine
 
 WORKDIR /opt
 
-ENV FE_STATIC static
+COPY dist ./dist
 
-COPY dist ./static
-COPY backend ./backend
-COPY .env ./.env
-
-CMD ["./backend"]
+CMD ["node", "dist/server/server.js"]
