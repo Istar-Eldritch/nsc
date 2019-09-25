@@ -21,7 +21,7 @@ export function Profile(props: ProfileProps): ReactElement {
   return (
     <div className={classes}>
       {props.data
-        .map((profile) => {
+        .map(profile => {
           return <span key={profile.id}>{profile.name}</span>;
         })
         .getOrElseL(() => {

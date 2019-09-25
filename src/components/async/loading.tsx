@@ -1,17 +1,20 @@
 import React from "react";
 
-import {NavBar} from "..";
+import { NavBar } from "..";
 
 interface AsyncLoadingState {
   showLoadingSpinner: boolean;
 }
 
-export default class AsyncLoading extends React.PureComponent<{}, AsyncLoadingState> {
+export default class AsyncLoading extends React.PureComponent<
+  {},
+  AsyncLoadingState
+> {
   public constructor(props: any) {
     super(props);
 
     this.state = {
-      showLoadingSpinner: false,
+      showLoadingSpinner: false
     };
   }
 
@@ -26,13 +29,11 @@ export default class AsyncLoading extends React.PureComponent<{}, AsyncLoadingSt
 
   public render() {
     return (
-        <main>
-          <NavBar />
+      <main>
+        <NavBar />
 
-          {this.state.showLoadingSpinner ? (
-            <div>Loading</div>
-          ) : null}
-        </main>
+        {this.state.showLoadingSpinner ? <div>Loading</div> : null}
+      </main>
     );
   }
 }

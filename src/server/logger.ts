@@ -1,19 +1,18 @@
-import {createLogger, transports, format} from "winston";
+import { createLogger, transports, format } from "winston";
 
 const logger = createLogger({
   level: "info",
-  transports: [
-  ]
+  transports: []
 });
 
-if(process.env.NODE_ENV === "production") {
+if (process.env.NODE_ENV === "production") {
   logger.add(
     new transports.Console({
       format: format.combine(format.colorize(), format.simple()) // TODO Format for stackdrive
     })
   );
 } else {
-   logger.add(
+  logger.add(
     new transports.Console({
       format: format.combine(
         format.colorize(),
@@ -23,7 +22,6 @@ if(process.env.NODE_ENV === "production") {
       )
     })
   );
- 
 }
 
 export default logger;

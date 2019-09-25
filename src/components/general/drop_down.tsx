@@ -1,4 +1,10 @@
-import React, { RefObject, ReactNode, useEffect, useState, ReactElement } from "react";
+import React, {
+  RefObject,
+  ReactNode,
+  useEffect,
+  useState,
+  ReactElement
+} from "react";
 
 interface DropdownProps {
   className?: string;
@@ -19,7 +25,8 @@ export function Dropdown(props: DropdownProps): ReactElement {
 
   // Close the popup if we click ouside of the element
   const onClickOut = (e: Event): void => {
-    const is_element = state.ref.current && state.ref.current.contains(e.target as Element);
+    const is_element =
+      state.ref.current && state.ref.current.contains(e.target as Element);
     if (!is_element && state.open) {
       props.onStateDidChange && props.onStateDidChange(false);
       setState({ ...state, open: false });

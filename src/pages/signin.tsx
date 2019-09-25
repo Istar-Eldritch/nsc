@@ -20,7 +20,13 @@ function Input(props: InputProps): ReactElement {
     rounded
     ${props.className} 
   `;
-  return <input className={classes} placeholder={props.placeholder} type={props.type} />;
+  return (
+    <input
+      className={classes}
+      placeholder={props.placeholder}
+      type={props.type}
+    />
+  );
 }
 
 interface FieldProps {
@@ -43,7 +49,9 @@ function Field(props: FieldProps): ReactElement {
       <Input
         placeholder={props.placeholder}
         type={props.type}
-        className={`${props.error ? "border-red-800 focus:border-red-800" : ""}`}
+        className={`${
+          props.error ? "border-red-800 focus:border-red-800" : ""
+        }`}
       />
       <label className="text-xs text-red-800 h-3">{props.error}</label>
     </div>
@@ -82,7 +90,12 @@ export function SignUp(): ReactElement {
           <h1 className="mb-8 text-2xl">Sign In</h1>
 
           <Field placeholder="Email" className="mb-4" type="email" error="" />
-          <Field placeholder="Password" className="mb-8" type="password" error="Invalid password" />
+          <Field
+            placeholder="Password"
+            className="mb-8"
+            type="password"
+            error="Invalid password"
+          />
           <Field
             placeholder="Repeat Password"
             className="mb-8"
@@ -106,7 +119,12 @@ export function SignIn(): ReactElement {
           <h1 className="mb-8 text-2xl">Sign In</h1>
 
           <Field placeholder="Email" className="mb-4" type="email" error="" />
-          <Field placeholder="Password" className="mb-8" type="password" error="Invalid password" />
+          <Field
+            placeholder="Password"
+            className="mb-8"
+            type="password"
+            error="Invalid password"
+          />
 
           <Button className="text-lg p-2">Submit</Button>
         </div>
