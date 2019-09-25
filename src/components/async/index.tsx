@@ -13,7 +13,7 @@ export default function asyncComponent(getComponent: () => Promise<any>): any {
           super(props);
 
           this.state = {
-            Component: null,
+            Component: null
           };
         }
 
@@ -21,7 +21,7 @@ export default function asyncComponent(getComponent: () => Promise<any>): any {
           const { default: Component } = await getComponent();
 
           this.setState({
-            Component,
+            Component
           });
         }
 

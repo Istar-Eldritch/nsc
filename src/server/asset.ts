@@ -20,7 +20,7 @@ function readManifest(): Manifest {
     try {
       // Path is relative to start command directory, not source file
       const file = fs.readFileSync("./dist/asset-manifest.json", {
-        encoding: "utf-8",
+        encoding: "utf-8"
       });
       const parsed = JSON.parse(file);
 
