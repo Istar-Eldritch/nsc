@@ -7,10 +7,13 @@ import App, { AppRoute, appRoutes } from "../app";
 import { StaticContext } from "./types";
 import Container from "./container";
 import logger from "./logger";
+import { router as api } from "./api";
 
 const basePath = process.env.BASE_PATH || "";
 
 const router = new Router().prefix(basePath);
+
+router.use("/api", api.routes());
 
 // Resolve dynamic imports
 const routeResolvers: Promise<AppRoute>[] = appRoutes.map((route: any) => {
