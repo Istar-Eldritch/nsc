@@ -1,4 +1,4 @@
-import { Client } from "pg";
+import { Pool, Client } from "pg";
 import logger from "../../logger";
 import { Option } from "funfix";
 
@@ -6,8 +6,8 @@ import users_and_session_table from "./2019-09-26T08:58:50.556Z-users_and_sessio
 
 export interface Migration {
   name: string; // Format ISO 8601 Notation - Custom String (2019-09-26T08:58:50.556Z-create-table)
-  up(client: Client): Promise<void>;
-  down(client: Client): Promise<void>;
+  up(client: Pool | Client): Promise<void>;
+  down(client: Pool | Client): Promise<void>;
 }
 
 interface MigrationRow {
@@ -18,7 +18,7 @@ interface MigrationRow {
 
 const migrations: Migration[] = [users_and_session_table];
 
-export async function runMigrations(client: Client): Promise<void> {
+export async function runMigrations(client: Pool | Client): Promise<void> {
   try {
     await client.query("BEGIN");
 
@@ -40,10 +40,6 @@ export async function runMigrations(client: Client): Promise<void> {
 
     const newMigrations = migrations.filter(filterNewMigrations);
 
-    if (newMigrations.length === 0) {
-      logger.info("No migrations to run");
-    }
-
     for (const migration of newMigrations) {
       logger.info(`Running ${migration.name}`);
       await migration.up(client);
@@ -51,6 +47,12 @@ export async function runMigrations(client: Client): Promise<void> {
         `insert into migrations(name, created_at) values($1, $2)`,
         [migration.name, new Date().toISOString()]
       );
+    }
+
+    if (newMigrations.length === 0) {
+      logger.info("No migrations to run");
+    } else {
+      logger.info(`Finished running ${migrations.length} migrations`);
     }
 
     await client.query("COMMIT");

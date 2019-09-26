@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node dist/server/server.js",
-    "start:dev": "nodemon",
+    "start:dev": "dotenv nodemon",
     "build": "NODE_ENV=production webpack --mode production --progress",
     "build:dev": "webpack --mode development --config webpack.config.js --progress",
     "clean": "rm -fr dist && rm -fr .cache",
