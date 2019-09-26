@@ -1,3 +1,5 @@
+/* eslint @typescript-eslint/no-var-requires: 0 */
+
 const path = require("path");
 const webpack = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -14,7 +16,7 @@ const publicPath = "/assets/";
 const common = {
   cache: true,
   resolve: {
-    extensions: [".ts", ".tsx", ".js", ".json", ".css"],
+    extensions: [".ts", ".tsx", ".js", ".json", ".css"]
   },
   devtool: devMode ? "cheap-module-source-map" : "source-map",
   module: {
@@ -27,27 +29,27 @@ const common = {
             options: {
               name: devMode ? "[name].[ext]" : "[name].[hash:5].[ext]",
               limit: 8192,
-              fallback: "file-loader",
-            },
-          },
-        ],
-      },
-    ],
+              fallback: "file-loader"
+            }
+          }
+        ]
+      }
+    ]
   },
   optimization: {
     minimizer: [
       new TerserPlugin({
         cache: true,
         parallel: true,
-        extractComments: false,
+        extractComments: false
       }),
       new OptimizeCSSAssetsPlugin({
         cssProcessorPluginOptions: {
-          preset: ["default", { discardComments: { removeAll: true } }],
-        },
-      }),
-    ],
-  },
+          preset: ["default", { discardComments: { removeAll: true } }]
+        }
+      })
+    ]
+  }
 };
 
 module.exports = [
@@ -60,7 +62,7 @@ module.exports = [
       filename: devMode ? "main.js" : "main.[hash:5].js",
       chunkFilename: "[name].chunk.js",
       path: path.resolve(distPath, "assets"),
-      publicPath,
+      publicPath
     },
     mode: devMode ? "development" : "production",
     module: {
@@ -73,10 +75,10 @@ module.exports = [
             {
               loader: "file-loader",
               options: {
-                name: "[name].[ext]",
-              },
-            },
-          ],
+                name: "[name].[ext]"
+              }
+            }
+          ]
         },
         {
           test: /\.tsx?$/,
@@ -85,9 +87,9 @@ module.exports = [
             loader: "babel-loader",
             options: {
               cacheDirectory: true,
-              plugins: devMode ? ["react-hot-loader/babel"] : [],
-            },
-          },
+              plugins: devMode ? ["react-hot-loader/babel"] : []
+            }
+          }
         },
 
         {
@@ -98,7 +100,7 @@ module.exports = [
           use: [
             MiniCssExtractPlugin.loader,
             {
-						  loader: "css-loader",
+              loader: "css-loader",
               options: {
                 importLoaders: 1
               }
@@ -107,28 +109,28 @@ module.exports = [
               loader: "postcss-loader",
               options: {
                 config: {
-                  path: __dirname + "/postcss.config.js"
+                  path: path.resolve(__dirname, "postcss.config.js")
                 }
               }
             }
-          ],
-        },
-      ],
+          ]
+        }
+      ]
     },
     plugins: [
       // Set defaults for defined environment variables
       new webpack.EnvironmentPlugin({ NODE_ENV: "development", BASE_PATH: "" }),
       new MiniCssExtractPlugin({
         filename: devMode ? "[name].css" : "main.[hash:5].css",
-        chunkFilename: devMode ? "[id].css" : "[id].[hash:5].css",
+        chunkFilename: devMode ? "[id].css" : "[id].[hash:5].css"
       }),
       new ManifestPlugin({
-        fileName: "../asset-manifest.json",
+        fileName: "../asset-manifest.json"
       }),
       new BundleAnalyzerPlugin({
         // Comment next line to analyse browser bundle
-        analyzerMode: "disabled",
-      }),
+        analyzerMode: "disabled"
+      })
     ],
     optimization: {
       ...common.optimization,
@@ -138,11 +140,11 @@ module.exports = [
             name: "styles",
             test: /\.css$/,
             chunks: "all",
-            enforce: true,
-          },
-        },
-      },
-    },
+            enforce: true
+          }
+        }
+      }
+    }
   },
 
   // Server
@@ -153,14 +155,14 @@ module.exports = [
     output: {
       filename: "server.js",
       path: path.resolve(distPath, "server"),
-      publicPath,
+      publicPath
     },
     target: "node",
     performance: false,
     // Don't polyfill these; they will become the _output_ file path and name
     node: {
       __dirname: false,
-      __filename: false,
+      __filename: false
     },
     module: {
       rules: [
@@ -171,16 +173,17 @@ module.exports = [
           use: {
             loader: "babel-loader",
             options: {
-              cacheDirectory: true,
-            },
-          },
-        },
-      ],
+              cacheDirectory: true
+            }
+          }
+        }
+      ]
     },
     plugins: [
+      new webpack.IgnorePlugin(/^pg-native$/),
       new webpack.optimize.LimitChunkCountPlugin({
-        maxChunks: 1,
-      }),
+        maxChunks: 1
+      })
     ],
     // Disable optimisations for server bundle
     optimization: {
