@@ -12,7 +12,8 @@
     "lint": "eslint --cache './src/**/*.{ts,tsx}'",
     "prettier": "prettier './src/**/*.{ts,tsx}' './src/**/*.{css}'",
     "fmt": "npm run lint -- --fix && npm run prettier -- --write",
-    "fmt:check": "npm run lint && npm run prettier -- --check"
+    "fmt:check": "npm run lint && npm run prettier -- --check",
+    "migration": "dotenv ts-node src/bin/migration.ts"
   },
   "nodemonConfig": {
     "watch": [
@@ -36,6 +37,7 @@
     "@types/koa-router": "7.0.42",
     "@types/koa-static-cache": "5.1.0",
     "@types/koa-webpack": "5.0.1",
+    "@types/pg": "7.11.1",
     "@types/prismjs": "1.16.0",
     "@types/react": "16.9.2",
     "@types/react-dom": "16.9.0",
@@ -89,6 +91,7 @@
     "koa-bodyparser": "4.2.1",
     "koa-router": "7.4.0",
     "koa-static-cache": "5.1.2",
+    "pg": "7.12.1",
     "postcss-modules": "1.4.1",
     "prismjs": "1.17.1",
     "react": "16.9.0",
