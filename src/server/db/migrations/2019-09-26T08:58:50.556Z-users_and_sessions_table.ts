@@ -7,7 +7,7 @@ async function up(client: Client): Promise<void> {
   await client.query(`create table users(
     id UUID PRIMARY KEY,
     name VARCHAR NOT NULL,
-    email VARCHAR NOT NULL,
+    email VARCHAR NOT NULL UNIQUE,
     password_hash VARCHAR NOT NULL,
     created_at TIMESTAMPTZ NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL

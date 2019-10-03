@@ -6,6 +6,7 @@ import logger from "../logger";
 // import { runMigrations } from "./migrations";
 
 export * from "./migrations";
+export * from "./daos";
 
 let connection: Option<Pool> = None;
 
