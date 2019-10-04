@@ -28,8 +28,10 @@
     "exec": "ts-node --files --ignore node_modules src/server/index.dev.ts"
   },
   "devDependencies": {
+    "@babel/core": "7.6.2",
     "@babel/plugin-proposal-class-properties": "7.5.5",
     "@babel/plugin-syntax-dynamic-import": "7.2.0",
+    "@babel/preset-env": "7.6.2",
     "@babel/preset-react": "7.0.0",
     "@babel/preset-typescript": "7.6.0",
     "@fortawesome/fontawesome-free": "5.10.2",
@@ -66,8 +68,6 @@
     "mini-css-extract-plugin": "0.8.0",
     "nodemon": "1.19.2",
     "optimize-css-assets-webpack-plugin": "5.0.3",
-    "parcel": "1.12.3",
-    "parcel-plugin-bundle-visualiser": "1.2.0",
     "pirates": "4.0.1",
     "postcss-import": "12.0.1",
     "postcss-loader": "3.0.0",
