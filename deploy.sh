@@ -1,6 +1,7 @@
 set -e
 
 gcloud beta run deploy nsc \
+  --project x-cycling-251008 \
   --quiet \
   --platform managed \
   --allow-unauthenticated \
