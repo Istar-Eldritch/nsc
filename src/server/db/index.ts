@@ -10,24 +10,27 @@ export * from "./daos";
 
 let connection: Option<Pool> = None;
 
+async function getEnv(key: string): Promise<string> {
+  return Option.of(process.env[key]).getOrElseL(() =>
+    Promise.reject(new Error(`Must provide env ${key}`))
+  );
+}
+
 export async function getConnection(): Promise<Pool> {
   if (connection.isEmpty()) {
-    logger.info("Creating new connection to database");
-    const db_url = Option.of(process.env.DATABASE_URL);
-
-    return db_url
-      .map(async connectionString => {
-        const pool = new Pool({ connectionString });
-        await pool.connect();
-        pool.on("error", e => {
-          logger.error("Error on database connection", e);
-          // TODO Connection retry instead of exit
-          process.exit(1);
-        });
-        connection = Some(pool);
-        return pool;
-      })
-      .getOrElseL(() => Promise.reject(new Error("Must provide DATABASE_URL")));
+    logger.info("Creating a new pool of database clients");
+    const host = await getEnv("DB_HOST");
+    const database = await getEnv("DB_NAME");
+    const user = await getEnv("DB_USER");
+    const password = await getEnv("DB_PASS");
+    const pool = new Pool({ host, database, user, password });
+    pool.on("error", e => {
+      logger.error("Error on database connection", e);
+      // TODO Connection retry instead of exit
+      process.exit(1);
+    });
+    connection = Some(pool);
+    return pool;
   } else {
     return connection.get();
   }
