@@ -1,40 +1,10 @@
 import { Context } from "koa";
-import { getConnection, createUser } from "../../db";
-import logger from "../../logger";
 import * as t from "io-ts";
 import { isRight } from "fp-ts/lib/Either";
 
-// TODO: Create validations module
-const NonEmptyString = new t.Type<string, string, unknown>(
-  "String",
-  t.string.is,
-  (u, c) => {
-    if (typeof u === "string" && u.length > 0) {
-      return t.success(u);
-    } else {
-      if (u) {
-        return t.failure(u, c, "Is not a string");
-      } else {
-        return t.failure(u, c, "Can't be empty");
-      }
-    }
-  },
-  String
-);
-
-const emailRegex = /.+@.+/;
-const Email = new t.Type<string, string, unknown>(
-  "Email",
-  NonEmptyString.is,
-  (u: any, c) => {
-    if (emailRegex.test(u)) {
-      return t.success(u);
-    } else {
-      return t.failure(u, c, "Is not a valid email");
-    }
-  },
-  String
-);
+import { getConnection, createUser, PublicUser, toPublic } from "../../db";
+import logger from "../../logger";
+import { NonEmptyString, Email } from "../validations";
 
 const CreateUserCmdIO = t.interface({
   name: NonEmptyString,
@@ -45,13 +15,7 @@ const CreateUserCmdIO = t.interface({
 type CreateUserCmd = t.TypeOf<typeof CreateUserCmdIO>;
 
 interface CreateUserResponse {
-  result: {
-    id: string;
-    name: string;
-    email: string;
-    created_at: string;
-    updated_at: string;
-  };
+  result: PublicUser;
 }
 
 interface AlreadyRegisteredError {
@@ -74,10 +38,9 @@ export async function signup(ctx: Context) {
       const connection = await getConnection();
       const { name, email, password } = ctx.request.body as CreateUserCmd;
       const user = await createUser(connection, name, email, password);
-      delete user.password_hash;
 
       const response: CreateUserResponse = {
-        result: user
+        result: toPublic(user)
       };
 
       ctx.body = JSON.stringify(response);
