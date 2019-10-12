@@ -1,10 +1,24 @@
-import React, { ReactNode, ReactElement } from "react";
+import React, {
+  ReactNode,
+  ReactElement,
+  useState,
+  FormEvent,
+  ChangeEvent
+} from "react";
 import { NavBar } from "../components";
+import { pipe } from "fp-ts/lib/pipeable";
+import { getOrElse, map as mapEither } from "fp-ts/lib/Either";
+import {
+  prettyfyErrors,
+  SignInCommandIO
+} from "../server/api/auth/signin/interfaces";
 
 interface InputProps {
   placeholder?: string;
   className?: string;
   type?: string;
+  value?: string;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 function Input(props: InputProps): ReactElement {
@@ -25,6 +39,8 @@ function Input(props: InputProps): ReactElement {
       className={classes}
       placeholder={props.placeholder}
       type={props.type}
+      value={props.value}
+      onChange={props.onChange}
     />
   );
 }
@@ -35,6 +51,8 @@ interface FieldProps {
   className?: string;
   error?: string;
   type?: string;
+  value?: string;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 function Field(props: FieldProps): ReactElement {
@@ -52,6 +70,8 @@ function Field(props: FieldProps): ReactElement {
         className={`${
           props.error ? "border-red-800 focus:border-red-800" : ""
         }`}
+        onChange={props.onChange}
+        value={props.value}
       />
       <label className="text-xs text-red-800 h-3">{props.error}</label>
     </div>
@@ -61,6 +81,7 @@ function Field(props: FieldProps): ReactElement {
 interface ButtonProps {
   children: ReactNode;
   className?: string;
+  disabled?: boolean;
 }
 
 function Button(props: ButtonProps): ReactElement {
@@ -78,7 +99,11 @@ function Button(props: ButtonProps): ReactElement {
     ${props.className}
   `;
 
-  return <button className={classes}>{props.children}</button>;
+  return (
+    <button className={classes} disabled={props.disabled}>
+      {props.children}
+    </button>
+  );
 }
 
 export function SignUp(): ReactElement {
@@ -86,7 +111,7 @@ export function SignUp(): ReactElement {
     <>
       <NavBar />
       <div className="container mx-auto block mt-16 flex flex-col">
-        <div className="mx-auto flex flex-col shadow p-8">
+        <form className="mx-auto flex flex-col shadow p-8">
           <h1 className="mb-8 text-2xl">Sign In</h1>
 
           <Field placeholder="Email" className="mb-4" type="email" error="" />
@@ -100,33 +125,82 @@ export function SignUp(): ReactElement {
             placeholder="Repeat Password"
             className="mb-8"
             type="password"
-            error="Invalid password"
+            error="Password is too short"
           />
 
           <Button className="text-lg p-2">Submit</Button>
-        </div>
+        </form>
       </div>
     </>
   );
 }
 
 export function SignIn(): ReactElement {
+  const [email, setEmail] = useState<string>();
+  const [password, setPassword] = useState<string>();
+
+  function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+  }
+
+  function validate(): string[] {
+    return pipe(
+      SignInCommandIO.decode({ email, password }),
+      mapEither(() => []),
+      getOrElse(err => {
+        const reasons = prettyfyErrors(err);
+        const errors = [];
+        if (reasons.email) {
+          errors.push("The email inserted is not valid");
+        }
+        if (reasons.password) {
+          errors.push(`Password: ${reasons.password}`);
+        }
+        return errors;
+      })
+    );
+  }
+
+  const errors = validate();
+  console.log("Errors", errors);
+  const errorHTML = (
+    <ul className={errors.length === 0 ? "display: none" : ""}>
+      {errors.map((error, index) => (
+        <li key={index}>{error}</li>
+      ))}
+    </ul>
+  );
+
   return (
     <>
       <NavBar />
       <div className="container mx-auto block mt-16 flex flex-col">
         <div className="mx-auto flex flex-col shadow p-8">
-          <h1 className="mb-8 text-2xl">Sign In</h1>
+          <form onSubmit={onSubmit}>
+            <h1 className="mb-8 text-2xl">Sign In</h1>
 
-          <Field placeholder="Email" className="mb-4" type="email" error="" />
-          <Field
-            placeholder="Password"
-            className="mb-8"
-            type="password"
-            error="Invalid password"
-          />
+            <Field
+              placeholder="Email"
+              className="mb-4"
+              type="email"
+              error=""
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+            />
+            <Field
+              placeholder="Password"
+              className="mb-8"
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+            />
 
-          <Button className="text-lg p-2">Submit</Button>
+            {errorHTML}
+
+            <Button className="text-lg p-2" disabled={errors.length > 0}>
+              Submit
+            </Button>
+          </form>
         </div>
       </div>
     </>
