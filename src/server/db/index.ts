@@ -1,5 +1,6 @@
 import { Pool } from "pg";
 import { Option, Some, None } from "funfix";
+import config from "config";
 
 import logger from "../logger";
 
@@ -10,16 +11,10 @@ export * from "./daos";
 
 let connection: Option<Pool> = None;
 
-async function getEnv(key: string): Promise<string> {
-  return Option.of(process.env[key]).getOrElseL(() =>
-    Promise.reject(new Error(`Must provide env ${key}`))
-  );
-}
-
 export async function getConnection(): Promise<Pool> {
   if (connection.isEmpty()) {
     logger.info("Creating a new pool of database clients");
-    const connectionString = await getEnv("DATABASE_URL");
+    const connectionString = config.get<string>("db_url");
     const pool = new Pool({ connectionString });
     pool.on("error", e => {
       logger.error("Error on database connection", e);

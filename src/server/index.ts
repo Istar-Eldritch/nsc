@@ -2,6 +2,7 @@ import Koa from "koa";
 import staticCache from "koa-static-cache";
 import path from "path";
 import { init } from "./app";
+import * as config from "config";
 
 const app = new Koa();
 
@@ -16,4 +17,4 @@ app.use(
 
 init(app);
 
-app.listen(process.env.PORT || 3000);
+app.listen(config.get<number>("port"));

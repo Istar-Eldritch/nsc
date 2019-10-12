@@ -1,0 +1,4 @@
+{
+  "db_url": "postgres://postgres:postgres@localhost:5432/nsc",
+  "port": 3000
+}

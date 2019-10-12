@@ -1,9 +1,10 @@
 import { runMigrations } from "../server/db";
 import logger from "../server/logger";
 import { Client } from "pg";
+import * as config from "config";
 
 async function main() {
-  const connectionString = process.env.DATABASE_URL;
+  const connectionString = config.get<string>("db_url");
   const client = new Client({ connectionString });
   await client.connect();
   await runMigrations(client);

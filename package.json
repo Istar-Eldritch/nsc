@@ -4,8 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node dist/server/server.js",
-    "start:dev": "dotenv nodemon",
+    "start": "NODE_ENV=production node dist/server/server.js",
+    "start:dev": "NODE_ENV=local-dev nodemon",
     "start:debug": "TS_NODE_IGNORE=node_modules TS_NODE_FILES=true DATABASE_URL=postgres://postgres:postgres@localhost:5432/nsc node --inspect -r ts-node/register src/server/index.dev.ts",
     "build": "NODE_ENV=production webpack --mode production --progress",
     "build:dev": "webpack --mode development --config webpack.config.js --progress",
@@ -14,7 +14,7 @@
     "prettier": "prettier './src/**/*.{ts,tsx}' './src/**/*.{css}'",
     "fmt": "npm run lint -- --fix && npm run prettier -- --write",
     "fmt:check": "npm run lint && npm run prettier -- --check",
-    "migration": "dotenv ts-node src/bin/migration.ts"
+    "migration": "ts-node src/bin/migration.ts"
   },
   "nodemonConfig": {
     "watch": [
@@ -36,6 +36,7 @@
     "@babel/preset-typescript": "7.6.0",
     "@fortawesome/fontawesome-free": "5.10.2",
     "@types/bcryptjs": "2.4.2",
+    "@types/config": "0.0.34",
     "@types/koa": "2.0.49",
     "@types/koa-bodyparser": "4.3.0",
     "@types/koa-router": "7.0.42",
@@ -89,6 +90,7 @@
     "autoprefixer": "9.6.1",
     "axios": "0.19.0",
     "bcryptjs": "2.4.3",
+    "config": "3.2.3",
     "fp-ts": "2.1.0",
     "funfix": "7.0.1",
     "io-ts": "2.0.1",
