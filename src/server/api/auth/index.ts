@@ -1,2 +1,10 @@
 export * from "./signin";
 export * from "./signup";
+export { prettyfyErrors } from "./signin/interfaces";
+export { Response } from "./signin/interfaces";
+export { InvalidPayloadError } from "./signin/interfaces";
+export { Unauthorized } from "./signin/interfaces";
+export { UnexpectedError } from "./signin/interfaces";
+export { SignInSuccess } from "./signin/interfaces";
+export { SignInCommand } from "./signin/interfaces";
+export { SignInCommandIO } from "./signin/interfaces";

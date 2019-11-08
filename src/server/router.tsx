@@ -9,9 +9,7 @@ import Container from "./container";
 import logger from "./logger";
 import { router as api } from "./api";
 
-const basePath = process.env.BASE_PATH || "";
-
-const router = new Router().prefix(basePath);
+const router = new Router();
 
 router.use("/api", api.routes());
 

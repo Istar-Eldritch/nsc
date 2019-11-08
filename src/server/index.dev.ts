@@ -1,6 +1,7 @@
 import { addHook } from "pirates";
 import Webpack, { Configuration } from "webpack";
 import { init } from "./app";
+import config from "config";
 
 import Koa from "koa";
 import koaWebpack from "koa-webpack";
@@ -20,7 +21,7 @@ const app = new Koa();
 
 const compiler = Webpack(webpackConfig.find(c => c.name === "browser"));
 
-const port = parseInt(process.env.PORT || "3000", 10);
+const port = config.get<number>("port");
 
 koaWebpack({
   compiler,

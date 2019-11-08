@@ -1,80 +1,40 @@
 import { Context } from "koa";
-import { compare } from "../../utils/bcrypt-task";
-import * as t from "io-ts";
+import { compare } from "../../../utils/bcrypt-task";
 import {
+  left,
   map as mapRightEither,
-  mapLeft as mapLeftEither,
-  left
+  mapLeft as mapLeftEither
 } from "fp-ts/lib/Either";
 import {
+  flatten as flatTask,
+  fromEither,
+  leftTask,
   map as mapRightTask,
   mapLeft as mapLeftTask,
-  flatten as flatTask,
-  leftTask,
-  rightTask,
-  fromEither
+  rightTask
 } from "fp-ts/lib/TaskEither";
-import { map as mapOption, getOrElse } from "fp-ts/lib/Option";
+import { getOrElse, map as mapOption } from "fp-ts/lib/Option";
 import { pipe } from "fp-ts/lib/pipeable";
 
 import {
-  getConnection,
   createSession,
+  getConnection,
   getUserByEmail,
-  PublicUser,
-  User,
   Session,
-  toPublic
-} from "../../db";
-import { NonEmptyString, Email } from "../validations";
-import logger from "../../logger";
-
-const SignInCommandIO = t.interface({
-  email: Email,
-  password: NonEmptyString
-});
-
-type SignInCommand = t.TypeOf<typeof SignInCommandIO>;
-
-export interface SignInSuccess {
-  result: {
-    user: PublicUser;
-    token: string;
-  };
-}
-
-interface UnexpectedError {
-  status: 500;
-  error_code: "UNEXPECTED_ERROR";
-}
-
-interface Unauthorized {
-  status: 401;
-  error_code: "UNAUTHORIZED";
-}
-
-interface InvalidPayloadError {
-  status: 400;
-  error_code: "INVALID_PAYLOAD";
-  detail: { [k: string]: string };
-}
-
-interface Response {
-  status: number;
-  body: string;
-}
-
-function prettyfyErrors(errors: any) {
-  return errors.reduce(
-    (acc: any, err: any) => {
-      // TODO Abstract error parser
-      acc[err.context[1].key] =
-        err.message || "Undefined problem with the payload";
-      return acc;
-    },
-    {} as { [k: string]: string }
-  );
-}
+  toPublic,
+  User
+} from "../../../db";
+import logger from "../../../logger";
+import {
+  InvalidPayloadError,
+  prettyfyErrors,
+  Response,
+  SignInCommand,
+  SignInCommandIO,
+  SignInSuccess,
+  Unauthorized,
+  UnexpectedError
+} from "./interfaces";
 
 function ok(body: any): Response {
   return {
